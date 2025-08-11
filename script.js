@@ -446,6 +446,15 @@ const perguntarAI = async (question, game, apiKey, selectedPrompt) => {
     })
   })
 
+  // Verifique status da resposta
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('Chave API inválida ou sem permissão.')
+    } else {
+      throw new Error(`Erro na API: ${response.status} ${response.statusText}`)
+    }
+  }
+
   const data = await response.json()
   if (data.candidates && data.candidates.length > 0 &&
       data.candidates[0].content && data.candidates[0].content.parts &&
@@ -508,6 +517,7 @@ let selectedPrompt = ''
     aiResponse.querySelector('.response-content').innerHTML = markdownToHTML(text)
     aiResponse.classList.remove('hidden')
   } catch(error) {
+    alert(error.message)  // <== Aqui o alerta aparece para o usuário
     console.log('Erro: ', error)
   } finally {
     askButton.disabled = false
